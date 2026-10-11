@@ -1,0 +1,14 @@
+# output di compilazione (Arduino IDE / arduino-cli)
+build/
+*.elf
+*.map
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# sistema
+.DS_Store
+Thumbs.db
+*~

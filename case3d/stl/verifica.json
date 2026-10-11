@@ -1,0 +1,261 @@
+{
+ "parti": [
+  {
+   "file": "00_prova_misure.stl",
+   "triangoli": 6278,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 3414.7,
+   "bbox_mm": [
+    91.55,
+    46.7,
+    12.0
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "gray",
+   "orientamento": "pezzo di prova: stampare per primo"
+  },
+  {
+   "file": "01_guscio_anteriore.stl",
+   "triangoli": 28938,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 23039.7,
+   "bbox_mm": [
+    56.0,
+    114.0,
+    23.0
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "white",
+   "orientamento": "faccia frontale sul piatto"
+  },
+  {
+   "file": "02_guscio_posteriore.stl",
+   "triangoli": 10772,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 21740.0,
+   "bbox_mm": [
+    56.0,
+    114.0,
+    19.4
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "white",
+   "orientamento": "schiena sul piatto"
+  },
+  {
+   "file": "03_visiera.stl",
+   "triangoli": 4352,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 2371.8,
+   "bbox_mm": [
+    45.1,
+    52.1,
+    3.5
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "black",
+   "orientamento": "faccia frontale sul piatto, filamento NERO"
+  },
+  {
+   "file": "04_telaio_scheda.stl",
+   "triangoli": 7294,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 4050.8,
+   "bbox_mm": [
+    44.7,
+    63.4,
+    10.5
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "gray",
+   "orientamento": "piastra sul piatto"
+  },
+  {
+   "file": "05_braccio_destro.stl",
+   "triangoli": 2084,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 1805.7,
+   "bbox_mm": [
+    15.0,
+    30.0,
+    7.5
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "white",
+   "orientamento": "faccia piatta interna sul piatto"
+  },
+  {
+   "file": "06_braccio_sinistro.stl",
+   "triangoli": 2084,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 1805.7,
+   "bbox_mm": [
+    15.0,
+    30.0,
+    7.5
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "white",
+   "orientamento": "faccia piatta interna sul piatto"
+  },
+  {
+   "file": "07_piede_destro.stl",
+   "triangoli": 3260,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 5677.5,
+   "bbox_mm": [
+    16.0,
+    53.0,
+    14.31
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "white",
+   "orientamento": "suola sul piatto"
+  },
+  {
+   "file": "08_piede_sinistro.stl",
+   "triangoli": 3272,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 5677.5,
+   "bbox_mm": [
+    16.0,
+    53.0,
+    14.31
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "white",
+   "orientamento": "suola sul piatto"
+  },
+  {
+   "file": "09_tastino.stl",
+   "triangoli": 52,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 88.2,
+   "bbox_mm": [
+    11.95,
+    5.2,
+    3.0
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 2,
+   "colore": "white",
+   "orientamento": "sdraiato, stampare 2 pezzi"
+  },
+  {
+   "file": "10_anello_altoparlante40.stl",
+   "triangoli": 1316,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 818.7,
+   "bbox_mm": [
+    40.48,
+    41.3,
+    2.5
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "gray",
+   "orientamento": "opzionale (upgrade)"
+  },
+  {
+   "file": "11_perno_braccio.stl",
+   "triangoli": 520,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 205.2,
+   "bbox_mm": [
+    11.2,
+    5.0,
+    4.5
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 2,
+   "colore": "white",
+   "orientamento": "sdraiato sulla parte piatta, stampare 2 pezzi"
+  },
+  {
+   "file": "12_inserto_batteria_waveshare.stl",
+   "triangoli": 432,
+   "watertight": true,
+   "winding_ok": true,
+   "volume_mm3": 9041.7,
+   "bbox_mm": [
+    30.4,
+    40.4,
+    10.1
+   ],
+   "corpi": 1,
+   "manifold3d": "NoError",
+   "quantita": 1,
+   "colore": "gray",
+   "orientamento": "retro sul piatto, tasca verso l'alto (solo con la batteria Waveshare)"
+  }
+ ],
+ "interferenze": [],
+ "stabilita": {
+  "base": {
+   "massa_g": 104.8,
+   "baricentro_mm": [
+    -0.3,
+    -15.5,
+    -14.3
+   ],
+   "forza_ribaltamento_N": 0.41,
+   "equivale_a_grammi": 41
+  },
+  "con_upgrade_altoparlante40": {
+   "massa_g": 134.9,
+   "baricentro_mm": [
+    -0.2,
+    -22.1,
+    -13.8
+   ],
+   "forza_ribaltamento_N": 0.53,
+   "equivale_a_grammi": 54
+  }
+ },
+ "distanze_antenna_mm": {
+  "vite_telaio_1": 46.0,
+  "vite_telaio_2": 46.6,
+  "vite_telaio_3": 10.9,
+  "vite_telaio_4": 13.2,
+  "vite_guscio_1": 53.1,
+  "vite_guscio_2": 25.2,
+  "vite_guscio_3": 27.1,
+  "rif_batteria_103040": 9.8,
+  "rif_batteria_waveshare": 11.9,
+  "rif_altoparlante40_ingombro": 9.5,
+  "rif_altoparlante_di_serie": 27.0
+ }
+}
