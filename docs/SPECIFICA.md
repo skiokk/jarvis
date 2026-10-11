@@ -496,8 +496,8 @@ Le impostazioni si salvano solo se sono cambiate, per consumare meno la flash. I
 
 ### 4.14 Installazione
 
-- **Senza IDE:** scrivere `release/Jarvis_completo_0x0.bin` all'indirizzo **0x0** con esptool-js (https://espressif.github.io/esptool-js/) da Chrome o Edge. Al primo caricamento conviene fare "Erase flash". L'immagine contiene bootloader, partizioni e app.
-- **Aggiornamenti:** caricare `release/Jarvis_aggiornamento_OTA.bin` dalla pagina `/update`.
+- **Senza IDE:** scrivere `Jarvis_completo_0x0.bin`, preso dalla pagina delle [Release](https://github.com/skiokk/jarvis/releases/latest), all'indirizzo **0x0** con esptool-js (https://espressif.github.io/esptool-js/) da Chrome o Edge. Al primo caricamento conviene fare "Erase flash". L'immagine contiene bootloader, partizioni e app.
+- **Aggiornamenti:** caricare dalla pagina `/update` il file `Jarvis_aggiornamento_OTA.bin` dell'[ultima release](https://github.com/skiokk/jarvis/releases/latest).
 - **Da sorgente:** Arduino IDE 2 o arduino-cli, con le impostazioni di [`firmware/COMPILAZIONE.md`](../firmware/COMPILAZIONE.md).
 
 ---

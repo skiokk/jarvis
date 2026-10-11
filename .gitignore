@@ -12,3 +12,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *~
+
+# binari di rilascio: si pubblicano nelle Release di GitHub, non nel repository
+release/

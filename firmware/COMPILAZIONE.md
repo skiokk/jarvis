@@ -62,7 +62,9 @@ Dopo il caricamento la scheda resta in modalità download: va spenta e riaccesa 
 | USB Mode | Hardware CDC and JTAG (predefinito) |
 | Upload Speed | 921600 |
 
-## 4. Binari di rilascio (`release/`)
+## 4. Binari di rilascio
+
+I binari non sono nel repository: si scaricano dalla pagina delle [Release](https://github.com/skiokk/jarvis/releases). I comandi qui sotto li generano nella cartella locale `release/`, esclusa da git.
 
 | File | Uso |
 |---|---|

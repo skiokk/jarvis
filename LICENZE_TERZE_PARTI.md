@@ -37,7 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 La licenza vale solo per l'uso su prodotti Espressif (l'ESP32-S3 lo è).
 
-## Usati per compilare (presenti nei binari di `release/`)
+## Usati per compilare (presenti nei binari pubblicati nelle Release)
 
 | Componente | Licenza |
 |---|---|

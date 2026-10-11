@@ -1,116 +1,139 @@
 # Jarvis
 
-*A tiny desk voice-assistant robot with animated AMOLED eyes, built on an ESP32-S3. Documentation in Italian.*
+*English · [Italiano](README.it.md)*
 
-Assistente vocale da scrivania a forma di robottino. Ha due occhi animati su uno schermo AMOLED, risponde in italiano quando lo chiami «Jarvis», fa da orologio con il meteo e suona la radio. Gira su una **Waveshare ESP32-S3-Touch-AMOLED-1.8**: niente saldature e nessun costo ricorrente.
+A tiny desk voice-assistant robot. It has two animated eyes on an AMOLED screen, answers in Italian when you call it "Jarvis", doubles as a clock with the weather and plays internet radio. It runs on a **Waveshare ESP32-S3-Touch-AMOLED-1.8**: no soldering and no running costs.
 
 <p align="center">
-  <img src="case3d/anteprime/05_frontale_occhi.png" width="320" alt="Jarvis visto di fronte, con gli occhi accesi">
-  <img src="case3d/anteprime/01_vista_frontale_3-4.png" width="320" alt="Jarvis visto di tre quarti">
+  <img src="case3d/anteprime/05_frontale_occhi.png" width="320" alt="Jarvis from the front, eyes lit">
+  <img src="case3d/anteprime/01_vista_frontale_3-4.png" width="320" alt="Jarvis, three-quarter view">
 </p>
 
-> **Stato:** prima versione (1.0.0). Il firmware compila senza warning, ma non è ancora stato collaudato sulla scheda: per il primo avvio c'è una checklist nella [specifica](docs/SPECIFICA.md#9-collaudo-al-primo-avvio).
+> **Status:** first release (1.0.0). The firmware builds with no warnings but has not been tested on the board yet. There is a first-boot checklist in the [spec](docs/SPECIFICA.md#9-collaudo-al-primo-avvio).
 
-## Cosa fa
+The assistant speaks Italian, and so do its configuration page and the detailed docs ([technical spec](docs/SPECIFICA.md), [build guide](firmware/COMPILAZIONE.md), [case assembly](case3d/LEGGIMI_case.md)).
 
-- **«Jarvis» offline:** la parola di attivazione è riconosciuta sulla scheda (esp-sr di Espressif), senza mandare audio in rete finché non la dici.
-- **Domande a voce:** trascrizione con Groq Whisper, risposta di un modello linguistico su Groq (Qwen 3.8, con riserva GPT-OSS), voce italiana di Azure con i **sottotitoli sincronizzati** sullo schermo.
-- **Occhi animati** che ascoltano, pensano, sorridono quando parlano e sbattono le palpebre.
-- **Orologio e meteo** (Open-Meteo) con la barra di stato del telefono: Wi-Fi, batteria, ricarica.
-- **Radio via internet:** «Jarvis, metti Radio 105» (stream MP3 da radio-browser.info).
-- **Touch:** un tocco cambia modalità o interrompe, un tocco lungo fa partire l'ascolto.
-- **Pagina web** per Wi-Fi, chiavi, voce, volume, città e personalità. Configurazione dal telefono con captive portal; aggiornamenti del firmware via Wi-Fi.
-- **Costi zero:** Groq e Azure Speech hanno piani gratuiti che bastano per l'uso domestico.
+## Features
 
-## Cosa serve
+- **Offline "Jarvis" wake word:** detected on the board with Espressif's esp-sr. No audio leaves the device until you say it.
+- **Voice questions:** speech-to-text with Groq Whisper, answers from a language model on Groq (Qwen 3.8, falling back to GPT-OSS), and an Italian Azure voice with **synchronized subtitles** on the screen.
+- **Animated eyes** that listen, think, smile while talking and blink.
+- **Clock and weather** (Open-Meteo) with a phone-style status bar: Wi-Fi, battery, charging.
+- **Internet radio:** "Jarvis, metti Radio 105" (MP3 stream found through radio-browser.info).
+- **Touch:** a tap switches mode or interrupts, a long press starts listening.
+- **Web page** for Wi-Fi, API keys, voice, volume, city and personality. Setup from your phone through a captive portal; firmware updates over Wi-Fi.
+- **No running costs:** the free tiers of Groq and Azure Speech are enough for home use.
 
-| | Prezzo indicativo |
+## How it works
+
+```mermaid
+flowchart LR
+    MIC["Microphone<br/>ES8311 codec"] --> AFE["esp-sr on the board<br/>wake word + VAD"]
+    AFE -->|"question, WAV 16 kHz"| STT["Groq Whisper<br/>speech-to-text"]
+    STT --> LLM["Groq LLM<br/>Qwen 3.8, GPT-OSS fallback"]
+    LLM --> TTS["Azure TTS<br/>Italian neural voice"]
+    TTS -->|"PCM stream"| Q["Ring buffer<br/>in PSRAM"]
+    Q --> SPK["Speaker"]
+    LLM -.->|"subtitles"| UI["AMOLED<br/>eyes + subtitles"]
+```
+
+- **Seven FreeRTOS tasks on both cores.** Core 0 only feeds the microphone to the audio front end and runs wake word detection and recording. Core 1 handles network, playback, UI, touch and the web page.
+- **Recording:** after the beep, the first 250 ms (the beep's echo) are dropped and the VAD is reset. Recording stops after 700 ms of silence or 10 s, and is cancelled after 5 s without speech. The question is built in place in PSRAM and sent as a single multipart POST.
+- **Fallbacks:** on errors, timeouts or rate limits, speech-to-text switches to the other Whisper model and the chat moves down a chain of three models. Typical Whisper hallucinations on silent audio are filtered out.
+- **Playback:** Azure streams 16 kHz PCM straight into a lock-free single-producer, single-consumer ring buffer (576 KB in PSRAM, 3 s at 48 kHz), so no resampling is needed. The radio uses the same queue, with the codec switched to the stream's sample rate.
+
+Design choices, pin map, partitions, the problems found during development and the known limits are in the [technical spec](docs/SPECIFICA.md).
+
+## What you need
+
+| | Approx. price |
 |---|---|
-| Waveshare ESP32-S3-Touch-AMOLED-1.8, versione **con batteria** (case nero, speaker e batteria inclusi) | circa 35–40 € |
-| Cavo USB-C dati (va bene quello di un telefono) | – |
-| Case a capsula stampato in 3D, facoltativo: PLA bianco e nero e 7 viti M2 × 8 | pochi euro |
+| Waveshare ESP32-S3-Touch-AMOLED-1.8, **with battery** version (black case, speaker and battery included) | about €35–40 |
+| USB-C data cable (a phone cable is fine) | – |
+| 3D-printed capsule case, optional: white and black PLA and 7 M2 × 8 screws | a few euros |
 
-Account gratuiti: [Groq](https://console.groq.com) e [Azure](https://portal.azure.com).
+Free accounts: [Groq](https://console.groq.com) and [Azure](https://portal.azure.com).
 
-## Installazione
+## Installation
 
-### 1. Caricare il firmware (senza installare nulla)
+### 1. Flash the firmware (nothing to install)
 
-1. Scarica [`release/Jarvis_completo_0x0.bin`](release/Jarvis_completo_0x0.bin).
-2. Collega la scheda al computer con il cavo USB-C e apri **https://espressif.github.io/esptool-js/** con Chrome o Edge.
-3. Premi **Connect** e scegli la porta della scheda (USB JTAG/serial).
-4. Premi **Erase Flash**: solo la prima volta.
-5. In *Flash Address* lascia **0x0**, scegli il file `.bin` e premi **Program**.
-6. Alla fine spegni e riaccendi la scheda: tieni PWR premuto 6 s, poi premilo di nuovo.
+1. Download [`Jarvis_completo_0x0.bin`](https://github.com/skiokk/jarvis/releases/latest/download/Jarvis_completo_0x0.bin) from the [latest release](https://github.com/skiokk/jarvis/releases/latest).
+2. Connect the board to your computer with the USB-C cable and open **https://espressif.github.io/esptool-js/** in Chrome or Edge.
+3. Click **Connect** and pick the board's port (USB JTAG/serial).
+4. Click **Erase Flash**: first time only.
+5. Leave *Flash Address* at **0x0**, choose the `.bin` file and click **Program**.
+6. When it's done, power-cycle the board: hold PWR for 6 s, then press it again.
 
-Se la scheda non viene riconosciuta: spegnila (PWR per 6 s), tieni premuto **BOOT** e riaccendila con PWR.
+If the board isn't detected: turn it off (PWR for 6 s), hold **BOOT** and turn it back on with PWR.
 
-Al primo avvio Jarvis copia nella sua memoria il modello della parola di attivazione, in circa 3 secondi.
+On first boot Jarvis copies the wake word model into its own partition, in about 3 seconds.
 
-### 2. Procurarsi le chiavi (gratis)
+### 2. Get the API keys (free)
 
-- **Groq:** su https://console.groq.com, vai in *API Keys* e scegli *Create API Key*. Copia la chiave (inizia con `gsk_`).
+- **Groq:** at https://console.groq.com, go to *API Keys* and choose *Create API Key*. Copy the key (it starts with `gsk_`).
 - **Azure Speech:**
-  1. Su https://portal.azure.com crea una risorsa **Speech** (Servizi di Voce).
-  2. Come piano scegli **Free F0** e come area, per esempio, **West Europe**.
-  3. Nella risorsa apri *Chiavi ed endpoint* e copia la *Chiave 1* e l'*Area* (es. `westeurope`).
+  1. At https://portal.azure.com create a **Speech** resource.
+  2. Choose the **Free F0** tier and a region, for example **West Europe**.
+  3. In the resource, open *Keys and Endpoint* and copy *Key 1* and the *Location/Region* (e.g. `westeurope`).
 
-### 3. Configurare Jarvis
+### 3. Set up Jarvis
 
-1. Lo schermo mostra il nome di una rete Wi-Fi, `Jarvis-XXXX`: collegati con il telefono. Su molti telefoni la pagina si apre da sola; altrimenti vai su **http://192.168.4.1**.
-2. Compila i campi e premi **Salva**:
-   - rete Wi-Fi di casa e relativa password;
-   - chiave Groq;
-   - chiave e regione Azure;
-   - città per il meteo;
-   - una password per la pagina (consigliata).
-3. Jarvis si riavvia e si collega a casa. Da lì in poi la pagina è su **http://jarvis.local** (oppure all'indirizzo che compare sullo schermo), con utente `admin` e la password scelta.
+1. The screen shows the name of a Wi-Fi network, `Jarvis-XXXX`: connect to it with your phone. On many phones the page opens by itself; otherwise go to **http://192.168.4.1**.
+2. Fill in the fields and press **Salva** (Save):
+   - your home Wi-Fi network and password;
+   - the Groq key;
+   - the Azure key and region;
+   - the city for the weather;
+   - a password for the page (recommended).
+3. Jarvis restarts and joins your network. From then on the page is at **http://jarvis.local** (or at the address shown on the screen), with user `admin` and the password you chose.
 
-## Come si usa
+## Usage
 
-| Gesto | Cosa succede |
+| Gesture | What happens |
 |---|---|
-| «Jarvis» | ti ascolta (in modalità assistente) |
-| Tocco breve | assistente ↔ orologio; mentre parla, ascolta o suona la radio: la interrompe |
-| Tocco lungo (1 s) | ti ascolta senza dire «Jarvis» |
-| «Jarvis, metti la radio» | suona la radio preferita (Radio 105); si ferma con un tocco |
-| PWR breve | standby; si risveglia con un tocco o con BOOT |
-| PWR tenuto 6 s | spegnimento |
-| BOOT breve | nuova conversazione |
-| BOOT tenuto 5 s | torna alla configurazione (anche se hai dimenticato la password) |
+| "Jarvis" | listens (in assistant mode) |
+| Short tap | assistant ↔ clock; while it's talking, listening or playing the radio: stops it |
+| Long press (1 s) | listens without saying "Jarvis" |
+| "Jarvis, metti la radio" | plays the favourite station (Radio 105); a tap stops it |
+| Short PWR press | standby; wakes up with a tap or with BOOT |
+| PWR held for 6 s | power off |
+| Short BOOT press | new conversation |
+| BOOT held for 5 s | back to setup (even if you forgot the password) |
 
-**Aggiornamenti:** dalla pagina web, *Aggiornamento firmware (OTA)*, carica `release/Jarvis_aggiornamento_OTA.bin`.
+**Updates:** on the web page, under *Aggiornamento firmware (OTA)*, upload `Jarvis_aggiornamento_OTA.bin` from the [latest release](https://github.com/skiokk/jarvis/releases/latest).
 
-## Il case
+## The case
 
-Corpo bianco a capsula con visiera nera, braccia in posa e piedini. Si stampa senza supporti su una stampante FDM qualsiasi e si chiude con 7 viti, senza saldature. È tutto parametrico (CadQuery).
+White capsule body with a black visor, posed arms and little feet. It prints without supports on any FDM printer and closes with 7 screws, no soldering. It is fully parametric (CadQuery).
 
 <p align="center">
-  <img src="case3d/anteprime/03_vista_esplosa.png" width="560" alt="Vista esplosa del case">
+  <img src="case3d/anteprime/03_vista_esplosa.png" width="560" alt="Exploded view of the case">
 </p>
 
-- STL pronti per la stampa: [`case3d/stl/`](case3d/stl/).
-- Istruzioni di stampa e montaggio: [`case3d/LEGGIMI_case.md`](case3d/LEGGIMI_case.md).
-- Modello 3D interattivo: apri [`case3d/anteprima_3d.html`](case3d/anteprima_3d.html) nel browser, dopo averlo scaricato.
+- Print-ready STL files: [`case3d/stl/`](case3d/stl/).
+- Printing and assembly instructions (Italian): [`case3d/LEGGIMI_case.md`](case3d/LEGGIMI_case.md).
+- Interactive 3D model: download [`case3d/anteprima_3d.html`](case3d/anteprima_3d.html) and open it in a browser.
 
-## Cartelle
+## Repository layout
 
-| Cartella | Contenuto |
+| Folder | Contents |
 |---|---|
-| [`firmware/Jarvis/`](firmware/Jarvis/) | sketch Arduino |
-| [`firmware/COMPILAZIONE.md`](firmware/COMPILAZIONE.md) | come compilarlo (Arduino IDE 2 o arduino-cli) e generare i binari |
-| [`release/`](release/) | binari pronti: installazione completa e aggiornamento OTA |
-| [`case3d/`](case3d/) | case 3D: script, STL, STEP, anteprime |
-| [`docs/SPECIFICA.md`](docs/SPECIFICA.md) | specifica tecnica: hardware, firmware, servizi, scelte e limiti |
+| [`firmware/Jarvis/`](firmware/Jarvis/) | Arduino sketch |
+| [`firmware/COMPILAZIONE.md`](firmware/COMPILAZIONE.md) | how to build it (Arduino IDE 2 or arduino-cli) and produce the binaries |
+| [`case3d/`](case3d/) | 3D case: scripts, STL, STEP, previews |
+| [`docs/SPECIFICA.md`](docs/SPECIFICA.md) | technical spec: hardware, firmware, services, choices and limits |
 
-## Limiti
+The ready-made binaries (full image and OTA update) are on the [Releases](https://github.com/skiokk/jarvis/releases) page.
 
-- **Un solo microfono:** mentre parla o suona non sente «Jarvis», quindi si interrompe col tocco.
-- **Autonomia:** con la batteria inclusa è breve (circa un'ora a schermo acceso). È pensata per stare sulla scrivania collegata alla USB.
-- **Radio:** solo stream MP3. Radio Deejay e RTL 102.5 (canale principale) trasmettono solo in HLS/AAC.
-- **Speaker:** quello di serie è piccolo. Lo speaker da 40 mm con MAX98357A è previsto nel case e nel firmware, ma richiede di saldare sul connettore di espansione.
-- **Sicurezza:** pensata per una rete domestica. Le chiavi restano sulla scheda e la pagina non le mostra mai, ma il traffico verso la pagina non è cifrato.
+## Limitations
 
-## Licenza
+- **One microphone:** while Jarvis is talking or playing it can't hear "Jarvis", so you interrupt it with a tap.
+- **Battery life:** short with the included battery (about an hour with the screen on). It's meant to sit on the desk, plugged into USB.
+- **Radio:** MP3 streams only. Radio Deejay and RTL 102.5 (main channel) only broadcast in HLS/AAC.
+- **Speaker:** the built-in one is small. A 40 mm speaker with a MAX98357A is already supported by the case and the firmware, but it needs soldering on the expansion header.
+- **Security:** designed for a home network. The keys stay on the board and the page never shows them, but traffic to the page is not encrypted.
 
-Il codice e il case sono distribuiti con licenza [MIT](LICENSE). Il driver ES8311 e il modello «Jarvis» sono di Espressif e hanno le loro licenze: vedi [`LICENZE_TERZE_PARTI.md`](LICENZE_TERZE_PARTI.md).
+## License
+
+The code and the case are released under the [MIT](LICENSE) license. The ES8311 driver and the "Jarvis" wake word model are by Espressif and have their own licenses: see [`LICENZE_TERZE_PARTI.md`](LICENZE_TERZE_PARTI.md).
